@@ -2,6 +2,8 @@ package repositories
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"media-devoted/db"
 	"media-devoted/types"
 
@@ -14,6 +16,7 @@ type RocketRepository interface {
 	GetRocket(ctx context.Context, id *uuid.UUID) (*types.Rocket, error)
 	AddRocket(ctx context.Context, rocket *types.Rocket) error
 	UpdateRocket(ctx context.Context, rocket *types.Rocket) error
+	DeleteRocket(ctx context.Context, id uuid.UUID) error
 }
 
 type RocketRepositoryImpl struct {
@@ -91,6 +94,25 @@ func (r *RocketRepositoryImpl) UpdateRocket(ctx context.Context, rocket *types.R
 	// Commit the transaction if no errors
 	if err := tx.Commit().Error; err != nil {
 		return err // handle commit error
+	}
+
+	return nil
+}
+
+func (r *RocketRepositoryImpl) DeleteRocket(ctx context.Context, id uuid.UUID) error {
+	var rocket *types.Rocket
+
+	result := r.db.Table("rockets").First(&rocket, id)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			// Rocket does exists
+			return fmt.Errorf("rocket with id: %s not found", id)
+		}
+		return result.Error
+	}
+
+	if err := r.db.Table("rockets").Delete(&rocket, id); err != nil {
+		return err.Error
 	}
 
 	return nil

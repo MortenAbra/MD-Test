@@ -16,5 +16,6 @@ func AddRocketGroup(group *gin.RouterGroup) {
 		rocketGroup.GET("/:id", rocketController.GetRocket)
 		rocketGroup.POST("", rocketController.AddRocket)
 		rocketGroup.POST("/:id", rocketController.UpdateRocket)
+		rocketGroup.DELETE("/:id", rocketController.DeleteRocket)
 	}
 }

@@ -6,8 +6,6 @@ import (
 	"media-devoted/db"
 	"media-devoted/options"
 	"media-devoted/routing"
-
-	"github.com/gin-contrib/cors"
 )
 
 func main() {
@@ -26,10 +24,6 @@ func main() {
 		options.WithHost("0.0.0.0"),
 		options.WithPort("8080"),
 		options.WithRoutes(routing.AddRocketGroup),
-		options.WithCorsRules(cors.Config{
-			AllowOrigins: []string{"*"},
-			AllowMethods: []string{"GET", "POST"},
-		}),
 	)
 
 	if err := engine.Start(); err != nil {

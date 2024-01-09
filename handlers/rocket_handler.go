@@ -13,6 +13,7 @@ type RocketHandler interface {
 	GetRocket(ctx context.Context, id *uuid.UUID) (*types.Rocket, error)
 	AddRocket(ctx context.Context, rocket *types.Rocket) error
 	UpdateRocket(ctx context.Context, rocket *types.Rocket) error
+	DeleteRocket(ctx context.Context, id uuid.UUID) error
 }
 
 type RocketHandlerImpl struct {
@@ -60,4 +61,13 @@ func (h *RocketHandlerImpl) UpdateRocket(ctx context.Context, rocket *types.Rock
 		return updateErr
 	}
 	return updateErr
+}
+
+func (h *RocketHandlerImpl) DeleteRocket(ctx context.Context, id uuid.UUID) error {
+	deleteErr := h.RocketRepository.DeleteRocket(ctx, id)
+	if deleteErr != nil {
+		return deleteErr
+	}
+
+	return nil
 }

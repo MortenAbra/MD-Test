@@ -18,6 +18,16 @@ func ServerOptions(options ...func(*Engine)) *Engine {
 	engine := &Engine{
 		engine: gin.Default(),
 	}
+
+	engine.engine.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:4200"},
+		AllowMethods:     []string{"GET", "POST", "OPTIONS", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+		AllowWildcard:    true,
+	}))
 	for _, e := range options {
 		e(engine)
 	}
@@ -46,13 +56,5 @@ func WithRoutes(routeFuncs ...func(*gin.RouterGroup)) func(*Engine) {
 		for _, route := range routeFuncs {
 			route(v1)
 		}
-	}
-}
-
-
-func WithCorsRules(corsConfig cors.Config) func(*Engine) {
-	return func(e *Engine) {
-		corsMiddleware := cors.New(corsConfig)
-		e.engine.Use(corsMiddleware)
 	}
 }

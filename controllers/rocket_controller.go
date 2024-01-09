@@ -16,6 +16,7 @@ type RocketController interface {
 	GetRocket(ctx *gin.Context)
 	AddRocket(ctx *gin.Context)
 	UpdateRocket(ctx *gin.Context)
+	DeleteRocket(ctx *gin.Context)
 }
 
 type RocketControllerImpl struct {
@@ -121,4 +122,26 @@ func (c *RocketControllerImpl) UpdateRocket(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"res": "OK"})
+}
+
+func (c *RocketControllerImpl) DeleteRocket(ctx *gin.Context) {
+	id, err := uuid.Parse(ctx.Param("id"))
+	if err != nil {
+		custom_error.RocketError(ctx, custom_error.RocketResponseError{
+			Msg:    "error occurred parsing uuid",
+			Status: http.StatusBadRequest,
+		})
+		return
+	}
+
+	deleteErr := c.RockerHandler.DeleteRocket(ctx, id)
+	if deleteErr != nil {
+		custom_error.RocketError(ctx, custom_error.RocketResponseError{
+			Msg:    "error occurred deleting rocket",
+			Status: http.StatusInternalServerError,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"res": "Rocket has been deleted"})
 }
